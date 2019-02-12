@@ -353,60 +353,77 @@ exports.handleCommand = function (src, command, commandData, tar, channel) {
         }
         return;
     }
-    if (command === "auth") {
-        var doNotShow = ["[ld]jirachier", "blinky"];
-        var filterByAuth = function (level) {
-            return function (name) {
-                return sys.dbAuth(name) === level;
-            };
+     if (command == "auth") {
+    var DoNotShowIfOffline = [""];
+    var filterByAuth = function(level) {
+        return function(name) {
+            return sys.dbAuth(name) == level;
         };
-        var printOnlineOffline = function (name) {
-            name = name.toLowerCase();
-            if (doNotShow.indexOf(name) === -1) {
-                if (sys.id(name) === undefined) {
-                    sys.sendMessage(src, name, channel);
-                } else {
-                    sys.sendHtmlMessage(src, "<timestamp/><font color = " + script.getColor(sys.id(name)) + "><b>" + name.toCorrectCase() + "</b></font>", channel);
-                }
-            }
-        };
-        var authListArray = sys.dbAuths().sort();
-        if (commandData !== "~") {
-            sys.sendMessage(src, "", channel);
+    };
+    var authToIcon = ["u", "m", "a", "o"];
+    var printOnlineOffline = function(name) {
+        if (sys.id(name) === undefined) {
+            if (DoNotShowIfOffline.indexOf(name) == -1) sys.sendHtmlMessage(src, "<timestamp/><img src=\"Themes\\Classic\\client\\" + authToIcon[sys.dbAuth(name)] + "Away.png\">" + name + "(offline)", channel);
         }
-        switch (commandData) {
+        else {
+            sys.sendHtmlMessage(src, "<timestamp/><img src=\"Themes\\Classic\\client\\" + authToIcon[sys.dbAuth(name)] + "Available.png\"><font color = " + sys.getColor(sys.id(name)) + "><b>" + name.toCorrectCase() + "</b></font> (online)", channel);
+        }
+    };
+    var authlist = sys.dbAuths().sort();
+    sys.sendMessage(src, "", channel);
+    switch (commandData) {
         case "owners":
             sys.sendMessage(src, "*** Owners ***", channel);
-            authListArray.filter(filterByAuth(3)).forEach(printOnlineOffline);
+            authlist.filter(filterByAuth(3)).forEach(printOnlineOffline);
             break;
         case "admins":
         case "administrators":
             sys.sendMessage(src, "*** Administrators ***", channel);
-            authListArray.filter(filterByAuth(2)).forEach(printOnlineOffline);
+            authlist.filter(filterByAuth(2)).forEach(printOnlineOffline);
             break;
         case "mods":
         case "moderators":
             sys.sendMessage(src, "*** Moderators ***", channel);
-            authListArray.filter(filterByAuth(1)).forEach(printOnlineOffline);
+            authlist.filter(filterByAuth(1)).forEach(printOnlineOffline);
             break;
-        case "~":
-            var ret = {};
-            ret.owners = authListArray.filter(filterByAuth(3));
-            ret.administrators = authListArray.filter(filterByAuth(2));
-            ret.moderators = authListArray.filter(filterByAuth(1));
-            sys.sendMessage(src, "+auth: " + JSON.stringify(ret), channel);
-            return;
         default:
             sys.sendMessage(src, "*** Owners ***", channel);
-            authListArray.filter(filterByAuth(3)).forEach(printOnlineOffline);
+            authlist.filter(filterByAuth(3)).forEach(printOnlineOffline);
             sys.sendMessage(src, '', channel);
             sys.sendMessage(src, "*** Administrators ***", channel);
-            authListArray.filter(filterByAuth(2)).forEach(printOnlineOffline);
+            authlist.filter(filterByAuth(2)).forEach(printOnlineOffline);
             sys.sendMessage(src, '', channel);
             sys.sendMessage(src, "*** Moderators ***", channel);
-            authListArray.filter(filterByAuth(1)).forEach(printOnlineOffline);
+            authlist.filter(filterByAuth(1)).forEach(printOnlineOffline);
+    }
+    sys.sendMessage(src, '', channel);
+    return;
+}
+    if (command == "sametier") {
+        if (commandData == "on") {
+            battlebot.sendMessage(src, "You enforce same tier in your battles.", channel);
+            SESSION.users(src).sametier = true;
+        } else if (commandData == "off") {
+            battlebot.sendMessage(src, "You allow different tiers in your battles.", channel);
+            SESSION.users(src).sametier = false;
+        } else {
+            battlebot.sendMessage(src, "Currently: " + (SESSION.users(src).sametier ? "enforcing same tier" : "allow different tiers") + ". Use /sametier on/off to change it!", channel);
         }
-        sys.sendMessage(src, '', channel);
+        script.saveKey("forceSameTier", src, SESSION.users(src).sametier * 1);
+        return;
+    }
+    if (command == "idle") {
+        if (commandData.toLowerCase() == "on") {
+            battlebot.sendMessage(src, "You are now idling.", channel);
+            script.saveKey("autoIdle", src, 1);
+            sys.changeAway(src, true);
+        } else if (commandData.toLowerCase() == "off") {
+            battlebot.sendMessage(src, "You are back and ready for battles!", channel);
+            script.saveKey("autoIdle", src, 0);
+            sys.changeAway(src, false);
+        } else {
+            battlebot.sendMessage(src, "You are currently " + (sys.away(src) ? "idling" : "here and ready to battle") + ". Use /idle on/off to change it.", channel);
+        }
         return;
     }
     if (command === "sametier") {
