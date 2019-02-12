@@ -1,9 +1,9 @@
-﻿// This is the official Pokemon Online Scripts
+// This is the official Haciami PO Scripts
 // These scripts will only work on 2.0.00 or newer.
 /*jshint laxbreak:true,shadow:true,undef:true,evil:true,trailing:true,proto:true,withstmt:true*/
 // You may change these variables as long as you keep the same type
 var Config = {
-    base_url: "https://raw.githubusercontent.com/po-devs/po-server-goodies/master/",
+    base_url: "https://raw.githubusercontent.com/uHamic/Haciami-PO/master/",
     dataDir: "scriptdata/",
     bot: "Dratini",
     kickbot: "Blaziken",
