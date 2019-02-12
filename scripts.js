@@ -1572,7 +1572,6 @@ afterLogIn : function(src) {
         }
     }
     sys.sendMessage(src, "*** Type in /rules to see the rules and /commands to see the commands! ***");
-    sys.sendMessage(src, "±Official Side Channels: #Tournaments | #Safari | #Hangman | #Trivia | #Mafia");
 
     maxPlayersOnline = Math.max(sys.numPlayers(), maxPlayersOnline);
     if (maxPlayersOnline > sys.getVal("MaxPlayersOnline")) {
